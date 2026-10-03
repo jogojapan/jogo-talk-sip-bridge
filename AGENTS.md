@@ -10,8 +10,13 @@ bridge and configure it through environment variables.
 - `Dockerfile` - builds the image. It clones the upstream repo at a
   pinned commit (`ARG TSB_REF`), installs the bridge's own deps in the
   base `python:3.12-slim` image (manylinux wheels, no compiler), and runs
-  `daemon.py` from `/opt/talk-sip-bridge`. State lives in
+  `docker-entrypoint.py` from `/usr/local/bin`. State lives in
   `/var/lib/talk-sip-bridge` (a `VOLUME`).
+- `docker-entrypoint.py` - container entrypoint. Starts the daemon as a
+  child, waits for the control API, and toggles on any line that reports
+  `registered=false` (so dial-in works on a fresh state dir). Except for a
+  `BRIDGE_AUTO_REGISTER=false` opt-out, registration is always on at boot.
+  Forwards SIGTERM/SIGINT to the daemon so it can deregister cleanly.
 - `docker-compose.yml.example` - run config. Uses an `environment:` block
   whose `${BRIDGE_*}` values are interpolated from the stack's environment
   variables (Portainer-style) rather than an `env_file`; defaults via

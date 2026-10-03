@@ -34,15 +34,21 @@ variables. From the command line you can provide the same values via a
 
 Now `curl http://127.0.0.1:8765/status`.
 
-The line starts off unregistered. Turn it on from the Nextcloud admin page
-(if you installed the companion app) or:
+The entrypoint starts the daemon, checks `/status`, and toggles on any line
+that is not yet registered - so a fresh deployment comes up registered and
+dial-in works. `"registered": true, "last_error": null` means the line is
+up. Then open a Talk conversation, start a call, and press *Call a phone
+number*.
+
+To turn a line off/on by hand (or if you set `BRIDGE_AUTO_REGISTER=false`):
 
 ```
 curl -X POST http://127.0.0.1:8765/toggle
 ```
 
-`"registered": true, "last_error": null` means the line is up. Then open a
-Talk conversation, start a call, and press *Call a phone number*.
+`BRIDGE_AUTO_REGISTER` defaults to `true`; set it to `false` to keep the
+upstream behaviour of leaving the line off until toggled explicitly (e.g.
+from the Nextcloud admin page).
 
 ## Configuration
 

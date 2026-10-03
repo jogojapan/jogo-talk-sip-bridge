@@ -41,9 +41,13 @@ RUN cp /usr/src/talk-sip-bridge/bridge/*.py /opt/talk-sip-bridge/ \
 # Small per-line state files (whether each line's registration should be on).
 VOLUME /var/lib/talk-sip-bridge
 
+# Container entrypoint: starts the daemon, then turns on any line that is
+# not registered (see BRIDGE_AUTO_REGISTER).
+COPY docker-entrypoint.py /usr/local/bin/docker-entrypoint.py
+
 ENV PYTHONUNBUFFERED=1
 
 # Local SIP and RTP ports of a single-line deployment, plus the control API.
 EXPOSE 5060/udp 40000/udp 8765/tcp
 
-ENTRYPOINT ["python3", "-u", "/opt/talk-sip-bridge/daemon.py"]
+ENTRYPOINT ["python3", "-u", "/usr/local/bin/docker-entrypoint.py"]

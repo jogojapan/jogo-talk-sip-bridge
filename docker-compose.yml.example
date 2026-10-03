@@ -45,6 +45,10 @@ services:
       # tcp because this deployment's gateway (a FRITZ!Box) drops UDP
       # registrations without a word; override per deployment if needed.
       BRIDGE_SIP_TRANSPORT: ${BRIDGE_SIP_TRANSPORT:-tcp}
+      # On startup the entrypoint checks /status and toggles on any
+      # unregistered line, so dial-in works on a fresh/cleared state dir.
+      # Set false to keep registration off until toggled explicitly.
+      BRIDGE_AUTO_REGISTER: ${BRIDGE_AUTO_REGISTER:-true}
       BRIDGE_CONTROL_BIND: ${BRIDGE_CONTROL_BIND:-127.0.0.1}
       BRIDGE_CONTROL_PORT: ${BRIDGE_CONTROL_PORT:-8765}
     volumes:
