@@ -12,10 +12,11 @@ bridge and configure it through environment variables.
   base `python:3.12-slim` image (manylinux wheels, no compiler), and runs
   `daemon.py` from `/opt/talk-sip-bridge`. State lives in
   `/var/lib/talk-sip-bridge` (a `VOLUME`).
-- `docker-compose.yml.example` - run config; pass `.env` straight through
-  with `env_file` (no variable expansion, so any `BRIDGE_*` setting works
-  unmodified). Defaults to `network_mode: host`; `ports:` alternative is
-  commented out.
+- `docker-compose.yml.example` - run config. Uses an `environment:` block
+  whose `${BRIDGE_*}` values are interpolated from the stack's environment
+  variables (Portainer-style) rather than an `env_file`; defaults via
+  `${VAR:-default}`. Includes `BRIDGE_SIP_TRANSPORT:-tcp`. Defaults to
+  `network_mode: host`; `ports:` alternative is commented out.
 - `.env.example` - the 7 required bridge variables plus optional ones.
 - `README.md` - setup in Portainer/Docker, Talk-side `occ` config, and
   networking notes.

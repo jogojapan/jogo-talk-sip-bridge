@@ -22,11 +22,17 @@ should be registered).
 ## Quick start
 
 ```
-cp .env.example .env     # fill in the values
 cp docker-compose.yml.example docker-compose.yml
 docker compose up -d --build
-curl http://127.0.0.1:8765/status
 ```
+
+In Portainer, copy the compose file into a stack, set the `BRIDGE_*`
+variables in the stack's Environment section (Form or Advanced), and deploy.
+The compose file interpolates `${BRIDGE_*}` from those environment
+variables. From the command line you can provide the same values via a
+`.env` file in the project directory (see [`.env.example`](./.env.example)).
+
+Now `curl http://127.0.0.1:8765/status`.
 
 The line starts off unregistered. Turn it on from the Nextcloud admin page
 (if you installed the companion app) or:
@@ -40,14 +46,14 @@ Talk conversation, start a call, and press *Call a phone number*.
 
 ## Configuration
 
-Everything goes in `.env` (a copy of [`.env.example`](./.env.example)),
-which `docker compose` passes straight through. The required values are:
+The required variables, set in Portainer's stack Environment section (with
+fallbacks and dialect documented in [`.env.example`](./.env.example)):
 
 ```
+BRIDGE_LOCAL_IP=
 BRIDGE_SIP_USER=
 BRIDGE_SIP_PASS=
 BRIDGE_GATEWAY_HOST=
-BRIDGE_LOCAL_IP=
 BRIDGE_WS_URL=
 BRIDGE_INTERNAL_SECRET=
 BRIDGE_BACKEND_URL=

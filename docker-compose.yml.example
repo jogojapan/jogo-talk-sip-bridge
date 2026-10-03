@@ -1,13 +1,15 @@
 # talk-sip-bridge - docker-compose example
 #
-# Copy this file to docker-compose.yml and edit to taste, then:
+# Copy this file to docker-compose.yml and edit to taste, then in Portainer
+# set the BRIDGE_* variables in the stack's Environment section (Form /
+# Advanced). The ${VAR} references below are resolved from those - no .env
+# file is read by the container at runtime.
 #
-#     cp .env.example .env   # and fill in the values
 #     docker compose up -d --build
 #
-# Configuration is passed straight through from .env (env_file does no
-# variable expansion). Add or remove any BRIDGE_* variable there without
-# touching this file - see the upstream docs/CONFIG.md for the full list.
+# .env.example documents what each variable means; add or remove any
+# BRIDGE_* line here freely - see the upstream docs/CONFIG.md for the full
+# list of supported settings.
 
 services:
   talk-sip-bridge:
@@ -20,15 +22,39 @@ services:
     # host networking is the correct default: no NAT for SIP/RTP. Port
     # conflicts on 5060/40000 are then possible (see README.md).
     network_mode: host
-    env_file: .env
+    environment:
+      # --- Required: the SIP line and the Talk side --------------------
+      BRIDGE_LOCAL_IP: ${BRIDGE_LOCAL_IP}
+      BRIDGE_SIP_USER: ${BRIDGE_SIP_USER}
+      BRIDGE_SIP_PASS: ${BRIDGE_SIP_PASS}
+      BRIDGE_GATEWAY_HOST: ${BRIDGE_GATEWAY_HOST}
+      BRIDGE_WS_URL: ${BRIDGE_WS_URL}
+      BRIDGE_INTERNAL_SECRET: ${BRIDGE_INTERNAL_SECRET}
+      BRIDGE_BACKEND_URL: ${BRIDGE_BACKEND_URL}
+
+      # --- Dial-in (phone -> Talk). See .env.example for the recipes. ---
+      BRIDGE_DIALIN_NUMBERS: ${BRIDGE_DIALIN_NUMBERS:-}
+      BRIDGE_CONFERENCE_NUMBERS: ${BRIDGE_CONFERENCE_NUMBERS:-}
+      BRIDGE_CONFERENCE_CALLERS: ${BRIDGE_CONFERENCE_CALLERS:-}
+      BRIDGE_DEFAULT_ROOM: ${BRIDGE_DEFAULT_ROOM:-}
+      BRIDGE_NOTIFY_USER: ${BRIDGE_NOTIFY_USER:-}
+      BRIDGE_NOTIFY_APP_PASSWORD: ${BRIDGE_NOTIFY_APP_PASSWORD:-}
+      BRIDGE_AUTO_ANSWER: ${BRIDGE_AUTO_ANSWER:-false}
+
+      # --- Registration / control API -----------------------------------
+      # tcp because this deployment's gateway (a FRITZ!Box) drops UDP
+      # registrations without a word; override per deployment if needed.
+      BRIDGE_SIP_TRANSPORT: ${BRIDGE_SIP_TRANSPORT:-tcp}
+      BRIDGE_CONTROL_BIND: ${BRIDGE_CONTROL_BIND:-127.0.0.1}
+      BRIDGE_CONTROL_PORT: ${BRIDGE_CONTROL_PORT:-8765}
     volumes:
       - tsb-state:/var/lib/talk-sip-bridge
 
 # If you need port isolation instead of host networking, replace
-# `network_mode: host` with a published-port map, and in .env point
-# BRIDGE_LOCAL_IP at the container's bind address plus BRIDGE_CONTACT_HOST
-# at the host's LAN address the gateway should call. RTP through the
-# docker-proxy UDP path is less battle-tested than direct LAN access.
+# `network_mode: host` with a published-port map, and point BRIDGE_LOCAL_IP
+# at the container's bind address plus BRIDGE_CONTACT_HOST at the host's
+# LAN address the gateway should call. RTP through the docker-proxy UDP
+# path is less battle-tested than direct LAN access.
 #
 #     ports:
 #       - "5060:5060/udp"
