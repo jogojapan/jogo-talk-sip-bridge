@@ -1,0 +1,39 @@
+# talk-sip-bridge - docker-compose example
+#
+# Copy this file to docker-compose.yml and edit to taste, then:
+#
+#     cp .env.example .env   # and fill in the values
+#     docker compose up -d --build
+#
+# Configuration is passed straight through from .env (env_file does no
+# variable expansion). Add or remove any BRIDGE_* variable there without
+# touching this file - see the upstream docs/CONFIG.md for the full list.
+
+services:
+  talk-sip-bridge:
+    build: .
+    image: talk-sip-bridge:latest
+    container_name: talk-sip-bridge
+    restart: unless-stopped
+    # The daemon binds its SIP and RTP sockets to BRIDGE_LOCAL_IP as an
+    # ordinary LAN host and expects the gateway to reach it directly, so
+    # host networking is the correct default: no NAT for SIP/RTP. Port
+    # conflicts on 5060/40000 are then possible (see README.md).
+    network_mode: host
+    env_file: .env
+    volumes:
+      - tsb-state:/var/lib/talk-sip-bridge
+
+# If you need port isolation instead of host networking, replace
+# `network_mode: host` with a published-port map, and in .env point
+# BRIDGE_LOCAL_IP at the container's bind address plus BRIDGE_CONTACT_HOST
+# at the host's LAN address the gateway should call. RTP through the
+# docker-proxy UDP path is less battle-tested than direct LAN access.
+#
+#     ports:
+#       - "5060:5060/udp"
+#       - "40000:40000/udp"
+#       - "127.0.0.1:8765:8765/tcp"
+
+volumes:
+  tsb-state:

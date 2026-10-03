@@ -1,0 +1,18 @@
+# Local copy of the environment - holds SIP credentials, never commit.
+.env
+
+# Local copy of the compose file (edit the provided example instead).
+docker-compose.yml
+
+# Python artifacts, if you clone the bridge source in for development.
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# OS / editor noise.
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

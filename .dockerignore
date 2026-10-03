@@ -1,0 +1,8 @@
+# Build context is not used to fetch the bridge - the Dockerfile clones the
+# pinned upstream source inside the image - so only these matter.
+AGENTS.md
+.git
+*.md
+Dockerfile
+docker-compose.yml.example
+.env.example
